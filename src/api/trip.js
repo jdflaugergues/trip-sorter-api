@@ -19,7 +19,7 @@ tripRouter
   .get('/', getTrips);
 
 
-// API to get all trips from one city to another. 'to' and 'from' query paramaters are required
+// API to get all trips from one city to another. 'to' and 'from' query parameters are required
 // Ex: `/api/trip-sorter/trips?to=London&from=Moscow`
 async function getTrips(ctx) {
   // retrieve parameters
@@ -43,42 +43,14 @@ async function getTrips(ctx) {
   // Default filter is by cost then by duration
   const sortParameter = _.sortBy(['cost', 'duration'], s => s !== sort);
 
-  // Initialize first step of the trip
-  let allTrips = _(response.deals)
-    .filter(deal => deal.departure === from && (!transports || transports.includes(deal.transport)))
-    .map(deal => ({
-      steps: [Object.assign({}, deal, {duration: toMinutesDuration(deal.duration)})],
-      excludedCities: [deal.departure, deal.arrival],
-      cost: calculateDiscountedCost(deal.cost, deal.discount),
-      duration: toMinutesDuration(deal.duration)
-    }));
+  let allTrips = initializeTripsFirstStep(response.deals, from, transports);
 
   // Search other step of the trip with a max connections defined
   _.range(1, nbConnections + 1).forEach(nbConnections => {
-    allTrips = _(allTrips)
-      .map(trip => {
-        const lastStepArrival = _.last(trip.steps).arrival;
-        if (lastStepArrival === to) {
-          return trip;
-        }
-        return response.deals
-          .filter(deal => deal.departure === lastStepArrival && (!transports || transports.includes(deal.transport)) && !trip.excludedCities.includes(deal.arrival) && nbConnections <= MAX_CONNECTIONS)
-          .map(step => ({
-            steps: [...trip.steps, Object.assign({}, step, {duration: toMinutesDuration(step.duration)})],
-            excludedCities: [...trip.excludedCities, step.arrival],
-            cost: trip.cost + calculateDiscountedCost(step.cost, step.discount),
-            duration: trip.duration + toMinutesDuration(step.duration)
-          }));
-      })
-      .flatten();
+    allTrips = searchAllTripsWay(allTrips, to, transports, nbConnections <= MAX_CONNECTIONS)
   });
 
-  // Format trips data to send
-  allTrips = _(allTrips)
-    .filter(trip => _.last(trip.steps).arrival === to)  // Removal of trips where last step arrival not corresponding destination requested
-    .map(trip => _.omit(trip, 'excludedCities'))        // Removal useless property
-    .sortBy(sortParameter)                              // sorting trips
-    .value();
+  allTrips = formatTrips(allTrips, to, sortParameter);
 
   const tripsTaken = _.take(allTrips, MAX_TRIPS);       // keeping only n first trips define in MAX_TRIPS constant
 
@@ -98,6 +70,44 @@ async function getTrips(ctx) {
   };
 }
 
+
+function initializeTripsFirstStep(deals, from, transports) {
+  return _(deals)
+    .filter(deal => deal.departure === from && (!transports || transports.includes(deal.transport)))
+    .map(deal => ({
+      steps: [Object.assign({}, deal, {duration: toMinutesDuration(deal.duration)})],
+      excludedCities: [deal.departure, deal.arrival],
+      cost: calculateDiscountedCost(deal.cost, deal.discount),
+      duration: toMinutesDuration(deal.duration)
+    }));
+}
+
+function searchAllTripsWay(trips, to, transports, maxConnectionReached) {
+  return _(trips)
+    .map(trip => {
+      const lastStepArrival = _.last(trip.steps).arrival;
+      if (lastStepArrival === to) {
+        return trip;
+      }
+      return response.deals
+        .filter(deal => deal.departure === lastStepArrival && (!transports || transports.includes(deal.transport)) && !trip.excludedCities.includes(deal.arrival) && maxConnectionReached)
+        .map(step => ({
+          steps: [...trip.steps, Object.assign({}, step, {duration: toMinutesDuration(step.duration)})],
+          excludedCities: [...trip.excludedCities, step.arrival],
+          cost: trip.cost + calculateDiscountedCost(step.cost, step.discount),
+          duration: trip.duration + toMinutesDuration(step.duration)
+        }));
+    })
+    .flatten();
+}
+
+function formatTrips(trips, to, sortParameter) {
+  return _(trips)
+    .filter(trip => _.last(trip.steps).arrival === to)  // Removal of trips where last step arrival not corresponding destination requested
+    .map(trip => _.omit(trip, 'excludedCities'))        // Removal useless property
+    .sortBy(sortParameter)                              // sorting trips
+    .value();
+}
 
 // apply a discount percentage to a cost
 function calculateDiscountedCost(cost, discount) {

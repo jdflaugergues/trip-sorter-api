@@ -33,7 +33,7 @@ test('search cities with results', async t => {
 // SEARCH TRIPS TESTS
 test('search trips without parameter to', async t => {
   const res = await request(app.listen())
-    .get('/api/trip-sorter/trips');
+    .get('/api/trip-sorter/trips?from=Paris');
 
   t.is(res.status, 400);
 });
@@ -45,13 +45,13 @@ test('search trips without parameter from', async t => {
   t.is(res.status, 400);
 });
 
-test('search trips with unexisting "to" city', async t => {
+test('search trips with unknown "to" city', async t => {
   const res = await request(app.listen())
     .get('/api/trip-sorter/trips?to=Cannes&from=Paris');
 
   t.is(res.status, 404);
 });
-test('search trips with unexisting "from" city', async t => {
+test('search trips with unknown "from" city', async t => {
   const res = await request(app.listen())
     .get('/api/trip-sorter/trips?to=Paris&from=Cannes');
 
@@ -60,7 +60,7 @@ test('search trips with unexisting "from" city', async t => {
 
 test('search trips with invalid sort parameter', async t => {
   const res = await request(app.listen())
-    .get('/api/trip-sorter/trips?to=Paris&from=Londo&sort=name');
+    .get('/api/trip-sorter/trips?to=Paris&from=London&sort=name');
 
   t.is(res.status, 400);
 });

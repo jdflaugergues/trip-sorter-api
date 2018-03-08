@@ -1,10 +1,12 @@
-# Trip Sorter Core
+# Trip Sorter API
 
-This project is the backend of the trip sorter application. It contains the API to get the cities available for a trip search, and another one to get the cheapest or fastest trip from a departure to an arrival. 
+This project is the backend of the trip sorter application. It contains an API with two endpoints. 
+The first one to get the cities available for a trip.
+The second one to get the cheapest or fastest trip. 
 
 ## Directory Structure
 
-This project contains this mainly folder :
+Here is the organisation of the project:
 
 Directory       | Description
 --------------- |-------------
@@ -13,6 +15,9 @@ Directory       | Description
 `./scripts/`    | Utils for the API in particular the cities extraction of response.json data
 `./src/`        | Sources of the core with the business logic and algorithm for a trip search
 `./test`        | All AVA test of the API 
+
+## Prerequisite
+You have to install at least the v8.8.1 version of Node.js.
 
 ## Installation
 
@@ -87,10 +92,10 @@ Error-Response (example):
 
 ### Trips
 
-Route to search the cheapest and fastest trips for two cities given.
-The results can be sorted throw a sort parameter.
-The top ten of trips sorted is return.
-The structure of the response is a JSON :
+Route to search the cheapest and fastest trips between two cities.
+The results can be sorted thanks to a parameter.
+The best ten trips are returned.
+The response format is JSON :
 
 ```
 {

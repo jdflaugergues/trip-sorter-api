@@ -1,5 +1,5 @@
 {
-  "name": "trip-sorter-core",
+  "name": "trip-sorter-api",
   "version": "1.0.0",
   "description": "Trip sorter Core API",
   "main": "bin/server",
@@ -10,9 +10,9 @@
   "author": "Jonathan de Flaugergues <jdflaugergues@gmail.com>",
   "repository": {
     "type": "github",
-    "url": "https://github.com/jdflaugergues/trip-sorter/core"
+    "url": "https://github.com/jdflaugergues/trip-sorter-api"
   },
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "bunyan": "^1.8.12",
     "config": "^1.29.4",
@@ -43,5 +43,8 @@
       "node": true
     },
     "rules": {}
+  },
+  "engines": {
+    "node": "v8.8.1"
   }
 }
