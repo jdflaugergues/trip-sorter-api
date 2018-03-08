@@ -1,0 +1,47 @@
+{
+  "name": "trip-sorter-core",
+  "version": "1.0.0",
+  "description": "Trip sorter Core API",
+  "main": "bin/server",
+  "scripts": {
+    "start": "node bin/server",
+    "test": "NODE_ENV=test node_modules/.bin/nyc --reporter=lcov node_modules/.bin/ava --verbose && node_modules/.bin/nyc report"
+  },
+  "author": "Jonathan de Flaugergues <jdflaugergues@gmail.com>",
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/jdflaugergues/trip-sorter/core"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "bunyan": "^1.8.12",
+    "config": "^1.29.4",
+    "content-range": "^1.1.0",
+    "halson": "^3.0.0",
+    "js-yaml": "^3.10.0",
+    "koa": "^2.5.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-cors": "0.0.16",
+    "koa-router": "^7.4.0",
+    "koa2-cors": "^2.0.5",
+    "lodash": "^4.17.5",
+    "moment": "^2.20.1"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "cli-color": "^1.2.0",
+    "eslint": "^4.18.1",
+    "nomnom": "^1.8.1",
+    "nyc": "^11.4.1",
+    "supertest": "^3.0.0"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2017
+    },
+    "env": {
+      "node": true
+    },
+    "rules": {}
+  }
+}

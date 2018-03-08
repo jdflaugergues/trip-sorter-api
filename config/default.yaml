@@ -1,0 +1,7 @@
+mountPoint: /api/trip-sorter
+
+port: 3000
+
+log:
+  name: trip-sorter.api
+  level: info
